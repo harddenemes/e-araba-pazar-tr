@@ -2,451 +2,548 @@
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
+  Car,
   Battery,
-  Clock,
-  Fuel,
   Zap,
-  AlertTriangle,
-  BarChart4,
-  Trash2,
-  Plus,
-  Search,
-  RefreshCw,
+  Clock,
+  MapPin,
+  Calendar,
+  DollarSign,
+  BarChart,
+  LayoutGrid,
+  X,
+  PlusCircle
 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
+import BatteryHealthIndicator from '@/components/cars/BatteryHealthIndicator';
+import { Card, CardContent } from '@/components/ui/card';
 import { calculateBatteryHealth } from '@/lib/carUtils';
 
-// Sample car data for comparison
-const carOptions = [
+// Sample car data
+const sampleCars = [
   {
     id: '1',
     title: 'Tesla Model 3',
     brand: 'Tesla',
     model: 'Model 3',
-    variant: 'Long Range',
     year: 2022,
     price: 850000,
+    km: 15000,
+    range: { new: 510, current: 480 },
     batteryCapacity: 75,
-    range: 510,
-    acceleration: 4.2,
-    topSpeed: 233,
-    power: 340,
-    chargeTime: {
-      fast: 30,
-      normal: 420
-    },
-    dimension: {
-      length: 4694,
-      width: 1849,
-      height: 1443,
-      wheelbase: 2875,
-      weight: 1847
-    },
-    imageUrl: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dGVzbGElMjBtb2RlbCUyMDN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60',
+    chargeTime: { fast: 30, normal: 240 },
+    chargeTypes: ['Type 2', 'CCS'],
+    location: 'İstanbul',
+    imageUrl: 'https://placehold.co/600x400/ECEFF1/263238?text=Tesla+Model+3',
+    motorPower: '350 kW',
+    acceleration: '3.3 saniye',
+    topSpeed: '261 km/s',
+    weight: '1850 kg'
   },
   {
     id: '2',
     title: 'BMW i4',
     brand: 'BMW',
     model: 'i4',
-    variant: 'eDrive40',
-    year: 2022,
-    price: 1750000,
+    year: 2023,
+    price: 1250000,
+    km: 8000,
+    range: { new: 520, current: 510 },
     batteryCapacity: 83.9,
-    range: 520,
-    acceleration: 5.7,
-    topSpeed: 190,
-    power: 250,
-    chargeTime: {
-      fast: 35,
-      normal: 510
-    },
-    dimension: {
-      length: 4783,
-      width: 1852,
-      height: 1448,
-      wheelbase: 2856,
-      weight: 2125
-    },
-    imageUrl: 'https://images.unsplash.com/photo-1632245889029-e406faaa34cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGJtdyUyMGk0fGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60',
+    chargeTime: { fast: 35, normal: 260 },
+    chargeTypes: ['Type 2', 'CCS'],
+    location: 'Ankara',
+    imageUrl: 'https://placehold.co/600x400/ECEFF1/263238?text=BMW+i4',
+    motorPower: '400 kW',
+    acceleration: '3.9 saniye',
+    topSpeed: '225 km/s',
+    weight: '2215 kg'
   },
   {
     id: '3',
-    title: 'Hyundai IONIQ 5',
-    brand: 'Hyundai',
-    model: 'IONIQ 5',
-    variant: '72.6 kWh AWD',
-    year: 2023,
-    price: 1200000,
-    batteryCapacity: 72.6,
-    range: 480,
-    acceleration: 5.1,
-    topSpeed: 185,
-    power: 225,
-    chargeTime: {
-      fast: 20,
-      normal: 390
-    },
-    dimension: {
-      length: 4635,
-      width: 1890,
-      height: 1605,
-      wheelbase: 3000,
-      weight: 2020
-    },
-    imageUrl: 'https://images.unsplash.com/photo-1652509525608-6b44097ea5a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8aHl1bmRhaSUyMGlvbmlxJTIwNXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60',
+    title: 'Porsche Taycan',
+    brand: 'Porsche',
+    model: 'Taycan',
+    year: 2022,
+    price: 3200000,
+    km: 12000,
+    range: { new: 450, current: 420 },
+    batteryCapacity: 93.4,
+    chargeTime: { fast: 22, normal: 270 },
+    chargeTypes: ['Type 2', 'CCS'],
+    location: 'İzmir',
+    imageUrl: 'https://placehold.co/600x400/ECEFF1/263238?text=Porsche+Taycan',
+    motorPower: '560 kW',
+    acceleration: '2.8 saniye',
+    topSpeed: '260 km/s',
+    weight: '2380 kg'
+  },
+  {
+    id: '4',
+    title: 'Audi e-tron GT',
+    brand: 'Audi',
+    model: 'e-tron GT',
+    year: 2022,
+    price: 2850000,
+    km: 10000,
+    range: { new: 480, current: 460 },
+    batteryCapacity: 93.4,
+    chargeTime: { fast: 25, normal: 250 },
+    chargeTypes: ['Type 2', 'CCS'],
+    location: 'Bursa',
+    imageUrl: 'https://placehold.co/600x400/ECEFF1/263238?text=Audi+e-tron+GT',
+    motorPower: '475 kW',
+    acceleration: '3.3 saniye',
+    topSpeed: '245 km/s',
+    weight: '2340 kg'
   },
 ];
 
+const ComparisonTable = ({ cars }: { cars: any[] }) => {
+  // Check if we have cars to compare
+  if (cars.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">Henüz karşılaştırma için araç seçilmedi.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-left">
+        <thead>
+          <tr className="border-b">
+            <th className="py-4 px-3 font-medium text-gray-500">Özellik</th>
+            {cars.map((car) => (
+              <th key={car.id} className="py-4 px-3 text-center">{car.brand} {car.model}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {/* Images */}
+          <tr>
+            <td className="py-4 px-3 border-b font-medium text-gray-500">Görsel</td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">
+                <img 
+                  src={car.imageUrl} 
+                  alt={car.title}
+                  className="w-full h-36 object-cover rounded-md inline-block"
+                />
+              </td>
+            ))}
+          </tr>
+
+          {/* Year */}
+          <tr className="bg-gray-50">
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-gray-400" />
+              Yıl
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">{car.year}</td>
+            ))}
+          </tr>
+
+          {/* Price */}
+          <tr>
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-gray-400" />
+              Fiyat
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center font-bold">
+                {new Intl.NumberFormat('tr-TR').format(car.price)} ₺
+              </td>
+            ))}
+          </tr>
+
+          {/* Mileage */}
+          <tr className="bg-gray-50">
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <LayoutGrid className="h-4 w-4 text-gray-400" />
+              Kilometre
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">
+                {new Intl.NumberFormat('tr-TR').format(car.km)} km
+              </td>
+            ))}
+          </tr>
+
+          {/* Battery Health */}
+          <tr>
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <Battery className="h-4 w-4 text-gray-400" />
+              Batarya Sağlığı
+            </td>
+            {cars.map((car) => {
+              const batteryHealth = calculateBatteryHealth(car.km, car.range.new);
+              return (
+                <td key={car.id} className="py-4 px-3 border-b">
+                  <div className="w-full px-2">
+                    <BatteryHealthIndicator batteryHealth={batteryHealth} size="sm" />
+                  </div>
+                </td>
+              );
+            })}
+          </tr>
+
+          {/* Range */}
+          <tr className="bg-gray-50">
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <Zap className="h-4 w-4 text-gray-400" />
+              Menzil
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">
+                <div>Yeni: {car.range.new} km</div>
+                <div>Mevcut: {car.range.current} km</div>
+              </td>
+            ))}
+          </tr>
+
+          {/* Battery Capacity */}
+          <tr>
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <Battery className="h-4 w-4 text-gray-400" />
+              Batarya Kapasitesi
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">{car.batteryCapacity} kWh</td>
+            ))}
+          </tr>
+
+          {/* Charging Time */}
+          <tr className="bg-gray-50">
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <Clock className="h-4 w-4 text-gray-400" />
+              Şarj Süresi
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">
+                <div>Hızlı: {car.chargeTime.fast} dk</div>
+                <div>Normal: {car.chargeTime.normal} dk</div>
+              </td>
+            ))}
+          </tr>
+
+          {/* Charge Types */}
+          <tr>
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <Zap className="h-4 w-4 text-gray-400" />
+              Şarj Tipleri
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">
+                {car.chargeTypes.join(', ')}
+              </td>
+            ))}
+          </tr>
+
+          {/* Location */}
+          <tr className="bg-gray-50">
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-gray-400" />
+              Konum
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">{car.location}</td>
+            ))}
+          </tr>
+
+          {/* Motor Power */}
+          <tr>
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <Zap className="h-4 w-4 text-gray-400" />
+              Motor Gücü
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">{car.motorPower}</td>
+            ))}
+          </tr>
+
+          {/* Acceleration */}
+          <tr className="bg-gray-50">
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <BarChart className="h-4 w-4 text-gray-400" />
+              0-100 km/s Hızlanma
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">{car.acceleration}</td>
+            ))}
+          </tr>
+
+          {/* Top Speed */}
+          <tr>
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <Car className="h-4 w-4 text-gray-400" />
+              Maksimum Hız
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">{car.topSpeed}</td>
+            ))}
+          </tr>
+
+          {/* Weight */}
+          <tr className="bg-gray-50">
+            <td className="py-4 px-3 border-b font-medium text-gray-500 flex items-center gap-2">
+              <BarChart className="h-4 w-4 text-gray-400" />
+              Ağırlık
+            </td>
+            {cars.map((car) => (
+              <td key={car.id} className="py-4 px-3 border-b text-center">{car.weight}</td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
 const Compare = () => {
-  const [selectedCars, setSelectedCars] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  
-  const handleAddCar = (carId: string) => {
-    if (selectedCars.length < 3 && !selectedCars.includes(carId)) {
-      setSelectedCars([...selectedCars, carId]);
+  const [selectedCars, setSelectedCars] = useState<any[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
+
+  // Function to add a car to comparison
+  const addCarToComparison = (car: any) => {
+    if (selectedCars.find(c => c.id === car.id)) {
+      return; // Car already in comparison
     }
+    if (selectedCars.length >= 3) {
+      return; // Max 3 cars allowed
+    }
+    setSelectedCars([...selectedCars, car]);
   };
-  
-  const handleRemoveCar = (carId: string) => {
-    setSelectedCars(selectedCars.filter(id => id !== carId));
+
+  // Function to remove a car from comparison
+  const removeCarFromComparison = (carId: string) => {
+    setSelectedCars(selectedCars.filter(car => car.id !== carId));
   };
-  
+
+  // Function to clear all cars from comparison
   const clearComparison = () => {
     setSelectedCars([]);
   };
-  
-  // Get detailed car data from selected car IDs
-  const selectedCarData = selectedCars.map(id => 
-    carOptions.find(car => car.id === id)
-  ).filter(car => car !== undefined) as typeof carOptions;
-  
-  // Filter car options based on search query
-  const filteredCarOptions = searchQuery 
-    ? carOptions.filter(car => 
-        car.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        car.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        car.model.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : carOptions;
 
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="bg-header-gradient text-white py-12 px-4">
-        <div className="container mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            Elektrikli Araç Karşılaştırma
-          </h1>
-          <p className="text-xl mb-6 max-w-2xl mx-auto">
-            Farklı elektrikli araç modellerini teknik özellikleri, performans değerleri ve fiyatlarıyla karşılaştırın.
+      <div className="container mx-auto py-8 px-4">
+        <div className="bg-header-gradient text-white rounded-lg p-6 mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold">Araç Karşılaştırma</h1>
+          <p className="mt-2 opacity-90">
+            Elektrikli araçları yan yana karşılaştırarak size en uygun olan aracı bulun.
           </p>
         </div>
-      </section>
 
-      <div className="container mx-auto py-8 px-4">
-        {/* Car Selection */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-4">Araç Seçimi</h2>
-          
-          <div className="mb-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                className="pl-10 pr-4 py-2 w-full"
-                type="text"
-                placeholder="Marka veya model ara"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+          <h2 className="text-xl font-bold mb-4">Karşılaştırma Seçenekleri</h2>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600">Karşılaştırılan Araçlar: </span>
+              <span className="font-bold">{selectedCars.length}/3</span>
             </div>
-          </div>
-
-          {/* Car Options */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            {filteredCarOptions.map(car => (
-              <div key={car.id} className="border rounded-lg p-4 flex items-center justify-between">
-                <div className="flex items-center">
-                  <img 
-                    src={car.imageUrl} 
-                    alt={car.title} 
-                    className="w-16 h-16 rounded-md object-cover mr-4" 
-                  />
-                  <div>
-                    <h3 className="font-medium">{car.title}</h3>
-                    <p className="text-sm text-gray-500">{car.variant} • {car.year}</p>
-                  </div>
-                </div>
-                <Button 
-                  variant={selectedCars.includes(car.id) ? "secondary" : "default"}
-                  size="sm"
-                  onClick={() => selectedCars.includes(car.id) ? handleRemoveCar(car.id) : handleAddCar(car.id)}
-                  disabled={selectedCars.length >= 3 && !selectedCars.includes(car.id)}
-                >
-                  {selectedCars.includes(car.id) ? (
-                    <Trash2 size={16} />
-                  ) : (
-                    <Plus size={16} />
-                  )}
-                </Button>
-              </div>
-            ))}
-          </div>
-          
-          {/* Selection Controls */}
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-500">
-              {selectedCars.length} / 3 araç seçildi
-            </div>
-            <div className="flex space-x-2">
+            <div className="flex gap-2">
               <Button 
                 variant="outline" 
-                size="sm"
+                size="sm" 
                 onClick={clearComparison}
                 disabled={selectedCars.length === 0}
               >
-                <RefreshCw size={16} className="mr-2" />
                 Temizle
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setViewMode(viewMode === 'table' ? 'grid' : 'table')}
+              >
+                {viewMode === 'table' ? (
+                  <><LayoutGrid className="h-4 w-4 mr-1" /> Grid Görünümü</>
+                ) : (
+                  <><BarChart className="h-4 w-4 mr-1" /> Tablo Görünümü</>
+                )}
               </Button>
             </div>
           </div>
+
+          {selectedCars.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {selectedCars.map(car => (
+                <div 
+                  key={car.id} 
+                  className="flex items-center gap-2 bg-gray-100 rounded-full py-1 px-3"
+                >
+                  <span>{car.brand} {car.model}</span>
+                  <button onClick={() => removeCarFromComparison(car.id)}>
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Comparison Table */}
-        {selectedCars.length > 0 ? (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="p-6 border-b">
-              <h2 className="text-2xl font-bold">Karşılaştırma Tablosu</h2>
-            </div>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-light-gray">
-                    <th className="p-4 text-left font-semibold">Özellik</th>
-                    {selectedCarData.map(car => (
-                      <th key={car.id} className="p-4 text-center font-semibold">
-                        <div className="flex flex-col items-center">
-                          <img 
-                            src={car.imageUrl} 
-                            alt={car.title} 
-                            className="w-20 h-20 rounded-md object-cover mb-2" 
-                          />
-                          <span>{car.brand} {car.model}</span>
-                          <span className="text-sm text-gray-500 font-normal">{car.variant}</span>
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-t">
-                    <td className="p-4 font-medium">Marka / Model</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.brand} {car.model}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-t bg-light-gray/50">
-                    <td className="p-4 font-medium">Fiyat</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center font-bold">
-                        {new Intl.NumberFormat('tr-TR').format(car.price)} ₺
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-t">
-                    <td className="p-4 font-medium">Model Yılı</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.year}
-                      </td>
-                    ))}
-                  </tr>
-                  
-                  {/* Battery Section */}
-                  <tr className="border-t bg-dark-gray text-white">
-                    <td colSpan={selectedCarData.length + 1} className="p-3 font-semibold">
-                      <div className="flex items-center">
-                        <Battery className="mr-2" />
-                        Batarya ve Menzil
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="border-t">
-                    <td className="p-4 font-medium">Batarya Kapasitesi</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.batteryCapacity} kWh
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-t bg-light-gray/50">
-                    <td className="p-4 font-medium">Menzil (WLTP)</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.range} km
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-t">
-                    <td className="p-4 font-medium">Hızlı Şarj Süresi</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.chargeTime.fast} dakika
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-t bg-light-gray/50">
-                    <td className="p-4 font-medium">Normal Şarj Süresi</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.chargeTime.normal} dakika
-                      </td>
-                    ))}
-                  </tr>
-                  
-                  {/* Performance Section */}
-                  <tr className="border-t bg-green text-white">
-                    <td colSpan={selectedCarData.length + 1} className="p-3 font-semibold">
-                      <div className="flex items-center">
-                        <Zap className="mr-2" />
-                        Performans
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="border-t">
-                    <td className="p-4 font-medium">Güç</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.power} kW
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-t bg-light-gray/50">
-                    <td className="p-4 font-medium">0-100 km/s Hızlanma</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.acceleration} saniye
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-t">
-                    <td className="p-4 font-medium">Maksimum Hız</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.topSpeed} km/s
-                      </td>
-                    ))}
-                  </tr>
-                  
-                  {/* Dimensions Section */}
-                  <tr className="border-t bg-blue text-white">
-                    <td colSpan={selectedCarData.length + 1} className="p-3 font-semibold">
-                      <div className="flex items-center">
-                        <BarChart4 className="mr-2" />
-                        Boyutlar ve Ağırlık
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="border-t">
-                    <td className="p-4 font-medium">Uzunluk</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.dimension.length} mm
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-t bg-light-gray/50">
-                    <td className="p-4 font-medium">Genişlik</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.dimension.width} mm
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-t">
-                    <td className="p-4 font-medium">Yükseklik</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.dimension.height} mm
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-t bg-light-gray/50">
-                    <td className="p-4 font-medium">Aks Mesafesi</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.dimension.wheelbase} mm
-                      </td>
-                    ))}
-                  </tr>
-                  <tr className="border-t">
-                    <td className="p-4 font-medium">Ağırlık</td>
-                    {selectedCarData.map(car => (
-                      <td key={car.id} className="p-4 text-center">
-                        {car.dimension.weight} kg
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+        {/* Selected Cars Comparison */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+          <div className="p-4 border-b">
+            <h2 className="text-xl font-bold">Karşılaştırma</h2>
           </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <AlertTriangle className="h-12 w-12 text-orange mx-auto mb-4" />
-            <h3 className="text-xl font-bold mb-2">Karşılaştırma İçin Araç Seçiniz</h3>
-            <p className="text-gray-600 mb-6">
-              Karşılaştırma yapmak için yukarıdan en az bir araç seçiniz.
-              En fazla 3 aracı aynı anda karşılaştırabilirsiniz.
+          {viewMode === 'table' ? (
+            <ComparisonTable cars={selectedCars} />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+              {selectedCars.map(car => (
+                <Card key={car.id}>
+                  <CardContent className="p-6">
+                    <div className="relative">
+                      <img 
+                        src={car.imageUrl} 
+                        alt={car.title}
+                        className="w-full h-48 object-cover rounded-md"
+                      />
+                      <button 
+                        className="absolute top-2 right-2 bg-white rounded-full p-1"
+                        onClick={() => removeCarFromComparison(car.id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <h3 className="text-lg font-bold mt-4">{car.brand} {car.model}</h3>
+                    <p className="text-2xl font-bold text-green mt-1">
+                      {new Intl.NumberFormat('tr-TR').format(car.price)} ₺
+                    </p>
+                    
+                    <Separator className="my-4" />
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <BatteryHealthIndicator 
+                          batteryHealth={calculateBatteryHealth(car.km, car.range.new)}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4 text-gray-500" />
+                          <span>{car.year}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <LayoutGrid className="h-4 w-4 text-gray-500" />
+                          <span>{new Intl.NumberFormat('tr-TR').format(car.km)} km</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Battery className="h-4 w-4 text-gray-500" />
+                          <span>{car.batteryCapacity} kWh</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Zap className="h-4 w-4 text-gray-500" />
+                          <span>{car.range.current} km menzil</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4 text-gray-500" />
+                          <span>{car.chargeTime.fast} dk hızlı şarj</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-4 w-4 text-gray-500" />
+                          <span>{car.location}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Button className="w-full mt-4 bg-dark-gray hover:bg-opacity-90">
+                      Detayları Gör
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Available Cars for Comparison */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="p-4 border-b">
+            <h2 className="text-xl font-bold">Karşılaştırmaya Eklenebilecek Araçlar</h2>
+            <p className="text-gray-600 text-sm mt-1">
+              Karşılaştırmak istediğiniz araçları seçin (en fazla 3 araç karşılaştırılabilir)
             </p>
           </div>
-        )}
-      </div>
-      
-      {/* Tips Section */}
-      {selectedCars.length > 0 && (
-        <section className="bg-light-gray py-12 px-4 mb-8">
-          <div className="container mx-auto">
-            <h2 className="text-2xl font-bold mb-6 text-center">Karşılaştırma İpuçları</h2>
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h3 className="font-bold mb-2">Menzil Değerlendirmesi</h3>
-                <p className="text-gray-600">
-                  WLTP değerleri ideal koşullarda ölçülür. Gerçek dünya koşullarında menzil,
-                  hava sıcaklığı, sürüş tarzı ve yol koşullarına göre %20-30 daha düşük olabilir.
-                </p>
-              </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
+            {sampleCars.map(car => {
+              const isSelected = selectedCars.some(c => c.id === car.id);
+              const isDisabled = selectedCars.length >= 3 && !isSelected;
               
-              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h3 className="font-bold mb-2">Şarj Süreleri</h3>
-                <p className="text-gray-600">
-                  Şarj süreleri, bataryanın %20'den %80'e şarj edilme süresini ifade eder.
-                  %80'den sonra şarj hızı bataryayı korumak için düşürülür.
-                </p>
-              </div>
-              
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="font-bold mb-2">Toplam Sahip Olma Maliyeti</h3>
-                <p className="text-gray-600">
-                  Elektrikli araç satın alırken sadece ilk alım fiyatını değil, şarj maliyetleri,
-                  bakım, sigorta ve muhtemel batarya değişim maliyetlerini de göz önünde bulundurun.
-                </p>
-              </div>
-            </div>
+              return (
+                <Card key={car.id} className={`relative ${isSelected ? 'ring-2 ring-green' : ''}`}>
+                  {isSelected && (
+                    <div className="absolute top-2 right-2 bg-green text-white rounded-full p-1 z-10">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                  )}
+                  <CardContent className="p-4">
+                    <img 
+                      src={car.imageUrl} 
+                      alt={car.title}
+                      className={`w-full h-32 object-cover rounded-md ${isDisabled ? 'opacity-50' : ''}`}
+                    />
+                    <h3 className="text-base font-bold mt-3 truncate">{car.brand} {car.model}</h3>
+                    <p className="text-lg font-bold text-green mt-1">
+                      {new Intl.NumberFormat('tr-TR').format(car.price)} ₺
+                    </p>
+                    
+                    <div className="grid grid-cols-2 gap-2 mt-3 text-xs text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        <span>{car.year}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Battery className="h-3 w-3" />
+                        <span>{car.batteryCapacity} kWh</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Zap className="h-3 w-3" />
+                        <span>{car.range.current} km</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        <span>{car.location}</span>
+                      </div>
+                    </div>
+                    
+                    <Button
+                      className={`w-full mt-3 ${
+                        isSelected 
+                          ? 'bg-green hover:bg-green/90' 
+                          : isDisabled 
+                            ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                            : 'bg-dark-gray hover:bg-opacity-90'
+                      }`}
+                      onClick={() => {
+                        if (!isDisabled) {
+                          isSelected 
+                            ? removeCarFromComparison(car.id)
+                            : addCarToComparison(car);
+                        }
+                      }}
+                      disabled={isDisabled}
+                    >
+                      {isSelected ? (
+                        <>Kaldır</>
+                      ) : (
+                        <><PlusCircle className="h-4 w-4 mr-1" /> Karşılaştır</>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
-        </section>
-      )}
+        </div>
+      </div>
     </Layout>
   );
 };

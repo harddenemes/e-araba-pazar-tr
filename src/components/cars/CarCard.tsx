@@ -5,6 +5,7 @@ import { Heart, MapPin, Battery, Clock, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { calculateBatteryHealth } from '@/lib/carUtils';
+import BatteryHealthIndicator from './BatteryHealthIndicator';
 
 export interface Car {
   id: string;
@@ -37,13 +38,6 @@ interface CarCardProps {
 const CarCard: React.FC<CarCardProps> = ({ car, onFavorite }) => {
   const batteryHealth = calculateBatteryHealth(car.km, car.range.new);
   const formattedPrice = new Intl.NumberFormat('tr-TR').format(car.price);
-  
-  const getBatteryHealthColor = (health: number) => {
-    if (health >= 80) return 'bg-green';
-    if (health >= 60) return 'bg-blue';
-    if (health >= 40) return 'bg-orange';
-    return 'bg-red-500';
-  };
 
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 card-hover">
@@ -79,17 +73,8 @@ const CarCard: React.FC<CarCardProps> = ({ car, onFavorite }) => {
         </div>
         
         <div className="space-y-3 mb-4">
-          {/* Battery health indicator */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Batarya Sağlığı</span>
-            <span className="text-sm font-medium">{batteryHealth}%</span>
-          </div>
-          <div className="battery-indicator">
-            <div 
-              className={`battery-level ${getBatteryHealthColor(batteryHealth)}`} 
-              style={{ width: `${batteryHealth}%` }}
-            ></div>
-          </div>
+          {/* Enhanced Battery Health Indicator */}
+          <BatteryHealthIndicator batteryHealth={batteryHealth} />
           
           <div className="grid grid-cols-2 gap-2">
             <div className="flex items-center">
