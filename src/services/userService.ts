@@ -37,11 +37,14 @@ const mockUser = {
   joinDate: '2023-01-15',
 };
 
+// Define the valid status types to match the ProfileManagement component expectations
+type ListingStatus = 'active' | 'pending' | 'sold' | 'suspended';
+
 const mockListings = [
   {
     id: '1',
     title: 'Tesla Model 3',
-    status: 'active',
+    status: 'active' as ListingStatus,
     views: 245,
     likes: 15,
     createdAt: '2023-05-10',
@@ -49,7 +52,7 @@ const mockListings = [
   {
     id: '2',
     title: 'BMW i4',
-    status: 'pending',
+    status: 'pending' as ListingStatus,
     views: 122,
     likes: 8,
     createdAt: '2023-06-05',
@@ -57,7 +60,7 @@ const mockListings = [
   {
     id: '3',
     title: 'Audi e-tron',
-    status: 'sold',
+    status: 'sold' as ListingStatus,
     views: 350,
     likes: 25,
     createdAt: '2023-04-20',

@@ -168,7 +168,7 @@ const ProfileManagement = ({ user: propUser, listings: propListings, favorites: 
     } else {
       toast({
         title: "Hata",
-        description: result.message || "Profil güncellenirken bir hata oluştu.",
+        description: "Profil güncellenirken bir hata oluştu.",
         variant: "destructive",
       });
     }
@@ -207,12 +207,12 @@ const ProfileManagement = ({ user: propUser, listings: propListings, favorites: 
       setPasswordStrength(0);
       toast({
         title: "Şifre güncellendi",
-        description: "Şifreniz başarıyla güncellendi.",
+        description: result.message || "Şifreniz başarıyla güncellendi.",
       });
     } else {
       toast({
         title: "Hata",
-        description: result.message || "Şifre güncellenirken bir hata oluştu.",
+        description: "Şifre güncellenirken bir hata oluştu.",
         variant: "destructive",
       });
     }
