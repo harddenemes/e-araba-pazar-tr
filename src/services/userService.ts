@@ -1,162 +1,158 @@
 
-// Mock kullanıcı veritabanı
-interface User {
-  id: string;
+import api from './api';
+
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+interface RegisterData {
   name: string;
   email: string;
+  password: string;
   phone?: string;
   location?: string;
-  avatarUrl?: string;
-  joinDate: string;
-  passwordHash: string;
 }
 
-interface Listing {
-  id: string;
-  userId: string;
-  title: string;
-  status: 'active' | 'pending' | 'sold' | 'suspended';
-  views: number;
-  likes: number;
-  createdAt: string;
+interface UserUpdateData {
+  name?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
 }
 
-interface Favorite {
-  id: string;
-  userId: string;
-  carId: string;
-  title: string;
-  price: number;
-  imageUrl: string;
+interface PasswordUpdateData {
+  currentPassword: string;
+  newPassword: string;
 }
 
-const users: User[] = [
-  {
-    id: '1',
-    name: 'Demo Kullanıcı',
-    email: 'demo@example.com',
-    phone: '555-123-4567',
-    location: 'İstanbul, Türkiye',
-    avatarUrl: 'https://i.pravatar.cc/150?u=demo',
-    joinDate: '2023-01-15',
-    passwordHash: 'hashed_password'
+// Authentication Services
+export const loginUser = async (credentials: LoginCredentials) => {
+  try {
+    const response = await api.post('/users/login', credentials);
+    
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Login failed' };
   }
-];
-
-const listings: Listing[] = [
-  {
-    id: '101',
-    userId: '1',
-    title: 'Tesla Model 3 2022',
-    status: 'active',
-    views: 145,
-    likes: 24,
-    createdAt: '2024-03-10',
-  },
-  {
-    id: '102',
-    userId: '1',
-    title: 'Porsche Taycan 2021',
-    status: 'sold',
-    views: 203,
-    likes: 37,
-    createdAt: '2024-02-22',
-  }
-];
-
-const favorites: Favorite[] = [
-  {
-    id: '201',
-    userId: '1',
-    carId: '301',
-    title: 'BMW i4 2023',
-    price: 1250000,
-    imageUrl: 'https://placehold.co/600x400/ECEFF1/263238?text=BMW+i4',
-  },
-  {
-    id: '202',
-    userId: '1',
-    carId: '302',
-    title: 'Audi e-tron GT 2022',
-    price: 2450000,
-    imageUrl: 'https://placehold.co/600x400/ECEFF1/263238?text=Audi+e-tron',
-  }
-];
-
-// User Authentication
-export const authenticateUser = (email: string, password: string) => {
-  const user = users.find(u => u.email === email);
-  
-  // Gerçek uygulamada şifre hash'i kontrol edilir
-  if (user) {
-    const { passwordHash, ...userWithoutPassword } = user;
-    return { success: true, user: userWithoutPassword };
-  }
-  
-  return { success: false, message: 'Geçersiz e-posta veya şifre' };
 };
 
-// Get Current User
-export const getCurrentUser = () => {
-  // Normalde JWT token veya session'dan kullanıcı alınır
-  const { passwordHash, ...userWithoutPassword } = users[0];
-  return userWithoutPassword;
-};
-
-// Get User Listings
-export const getUserListings = (userId: string) => {
-  return listings.filter(listing => listing.userId === userId);
-};
-
-// Get User Favorites
-export const getUserFavorites = (userId: string) => {
-  return favorites.filter(favorite => favorite.userId === userId);
-};
-
-// Update User Profile
-export const updateUserProfile = (userId: string, userData: Partial<User>) => {
-  const userIndex = users.findIndex(u => u.id === userId);
-  
-  if (userIndex !== -1) {
-    users[userIndex] = { ...users[userIndex], ...userData };
-    const { passwordHash, ...userWithoutPassword } = users[userIndex];
-    return { success: true, user: userWithoutPassword };
+export const registerUser = async (userData: RegisterData) => {
+  try {
+    const response = await api.post('/users/register', userData);
+    
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Registration failed' };
   }
-  
-  return { success: false, message: 'Kullanıcı bulunamadı' };
 };
 
-// Update Password
-export const updatePassword = (userId: string, currentPassword: string, newPassword: string) => {
-  const userIndex = users.findIndex(u => u.id === userId);
-  
-  if (userIndex !== -1) {
-    // Gerçek uygulamada şifre hash'i kontrol edilir
-    users[userIndex].passwordHash = 'new_hashed_password';
-    return { success: true };
-  }
-  
-  return { success: false, message: 'Kullanıcı bulunamadı' };
+export const logoutUser = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
 };
 
-// Add or Remove Favorite
-export const toggleFavorite = (userId: string, carId: string, carData?: any) => {
-  const existingIndex = favorites.findIndex(f => f.userId === userId && f.carId === carId);
-  
-  if (existingIndex !== -1) {
-    favorites.splice(existingIndex, 1);
-    return { success: true, action: 'removed' };
-  } else if (carData) {
-    favorites.push({
-      id: `fav-${Date.now()}`,
-      userId,
-      carId,
-      title: carData.title,
-      price: carData.price,
-      imageUrl: carData.imageUrl
-    });
-    return { success: true, action: 'added' };
+// User Profile Services
+export const getCurrentUser = async () => {
+  try {
+    const storedUser = localStorage.getItem('user');
+    
+    if (storedUser) {
+      return JSON.parse(storedUser);
+    }
+    
+    const response = await api.get('/users/me');
+    localStorage.setItem('user', JSON.stringify(response.data.user));
+    return response.data.user;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to get user data' };
   }
-  
-  return { success: false, message: 'İşlem gerçekleştirilemedi' };
+};
+
+export const updateUserProfile = async (userData: UserUpdateData) => {
+  try {
+    const response = await api.patch('/users/updateMe', userData);
+    
+    // Update stored user data
+    if (response.data.success) {
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+    
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Update failed' };
+  }
+};
+
+export const updatePassword = async (passwordData: PasswordUpdateData) => {
+  try {
+    const response = await api.patch('/users/updatePassword', passwordData);
+    
+    // Update token if returned
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+    }
+    
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Password update failed' };
+  }
+};
+
+// User Listings & Favorites
+export const getUserListings = async () => {
+  try {
+    const response = await api.get('/users/myListings');
+    return response.data.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to fetch listings' };
+  }
+};
+
+export const getUserFavorites = async () => {
+  try {
+    const response = await api.get('/users/myFavorites');
+    return response.data.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to fetch favorites' };
+  }
+};
+
+// Password Reset
+export const forgotPassword = async (email: string) => {
+  try {
+    const response = await api.post('/users/forgotPassword', { email });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Request failed' };
+  }
+};
+
+export const resetPassword = async (token: string, password: string) => {
+  try {
+    const response = await api.patch(`/users/resetPassword/${token}`, { password });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Reset failed' };
+  }
+};
+
+// Two-Factor Authentication
+export const toggleTwoFactor = async () => {
+  try {
+    const response = await api.patch('/users/toggleTwoFactor');
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Request failed' };
+  }
 };
