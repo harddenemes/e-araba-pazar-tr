@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -15,7 +14,8 @@ import {
   User,
   Heart,
   MessageCircle,
-  BookmarkPlus 
+  BookmarkPlus,
+  ArrowRight
 } from 'lucide-react';
 
 // Sample blog post data
