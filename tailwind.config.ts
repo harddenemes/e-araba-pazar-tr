@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,16 +53,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
-				}
+				// Custom colors for e-araba-pazar-tr
+				"green": "#00C853",
+				"dark-gray": "#263238",
+				"light-gray": "#ECEFF1",
+				"orange": "#FF6D00",
+				"blue": "#2962FF",
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -70,25 +67,39 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
+				},
+				'chargePulse': {
+					'0%, 100%': { opacity: '0.1' },
+					'50%': { opacity: '0.3' }
+				},
+				'fadeIn': {
+					from: { opacity: '0', transform: 'translateY(10px)' },
+					to: { opacity: '1', transform: 'translateY(0)' }
+				},
+				'lightningFlash': {
+					'0%': { opacity: '0' },
+					'5%': { opacity: '0.8' },
+					'10%': { opacity: '0.2' },
+					'15%': { opacity: '0.9' },
+					'20%': { opacity: '0' },
+					'100%': { opacity: '0' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'charge-pulse': 'chargePulse 2s infinite',
+				'fade-in': 'fadeIn 0.5s ease-out forwards',
+				'lightning-flash': 'lightningFlash 3s infinite'
+			},
+			backgroundImage: {
+				'header-gradient': 'linear-gradient(135deg, #263238 0%, #00C853 100%)'
 			}
 		}
 	},
