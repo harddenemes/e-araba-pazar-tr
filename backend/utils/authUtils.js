@@ -14,6 +14,11 @@ exports.createSendToken = (user, statusCode, res) => {
   // Remove password from output
   user.password = undefined;
 
+  // Kullanıcının son giriş zamanını güncelle
+  if (user.updateLastLogin) {
+    user.updateLastLogin();
+  }
+
   res.status(statusCode).json({
     success: true,
     token,
@@ -34,4 +39,12 @@ exports.generateResetToken = () => {
   const resetExpires = Date.now() + 10 * 60 * 1000;
   
   return { resetToken, hashedToken, resetExpires };
+};
+
+exports.generateVerificationToken = () => {
+  return crypto.randomBytes(16).toString('hex');
+};
+
+exports.generateVerificationCode = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
 };

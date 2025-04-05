@@ -27,6 +27,11 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (!currentUser) {
     return next(new AppError('The user belonging to this token no longer exists.', 401));
   }
+  
+  // 4) Check if user's account is active
+  if (currentUser.accountStatus !== 'active') {
+    return next(new AppError('Your account is not active. Please contact support.', 403));
+  }
 
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
@@ -43,3 +48,33 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
+
+// 2FA kontrolü için middleware (isteğe bağlı olarak kullanılabilir)
+exports.requireTwoFactor = catchAsync(async (req, res, next) => {
+  const { twoFactorCode } = req.body;
+  const user = req.user;
+
+  // Eğer kullanıcı 2FA etkinleştirmediyse, devam et
+  if (!user.twoFactorEnabled) {
+    return next();
+  }
+
+  // Eğer 2FA kodu sağlanmadıysa hata ver
+  if (!twoFactorCode) {
+    return next(new AppError('Two-factor authentication code required', 401));
+  }
+
+  // 2FA kodunu doğrula
+  // Bu kısımda gerçek bir 2FA implementasyonu yapılmalı
+  // Örnek olarak, kullanıcının 2FA secret'ını kullanarak kod doğrulama işlemi yapılır
+  // const isValidCode = verifyTwoFactorCode(user.twoFactorSecret, twoFactorCode);
+  
+  // Geçici olarak hard-coded kontrol
+  const isValidCode = twoFactorCode === '123456'; // Bu sadece örnek, gerçek uygulamada kullanılmamalı
+  
+  if (!isValidCode) {
+    return next(new AppError('Invalid two-factor authentication code', 401));
+  }
+
+  next();
+});

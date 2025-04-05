@@ -45,7 +45,22 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   resetPasswordToken: String,
-  resetPasswordExpire: Date
+  resetPasswordExpire: Date,
+  
+  // Yeni eklenen alanlar (e-posta değişikliği için)
+  newEmail: String,
+  emailVerificationCode: String,
+  emailVerificationExpires: Date,
+  
+  // Son giriş bilgisi
+  lastLogin: Date,
+  
+  // Hesap durumu (aktif, askıya alınmış, vb.)
+  accountStatus: {
+    type: String,
+    enum: ['active', 'suspended', 'deactivated'],
+    default: 'active'
+  }
 }, {
   timestamps: true
 });
@@ -64,7 +79,16 @@ userSchema.methods.correctPassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Generate JWT token method could be added here
+// Kullanıcının aktif olup olmadığını kontrol etme metodu
+userSchema.methods.isActive = function() {
+  return this.accountStatus === 'active';
+};
+
+// Son giriş zamanını güncelleme metodu
+userSchema.methods.updateLastLogin = async function() {
+  this.lastLogin = Date.now();
+  await this.save({ validateBeforeSave: false });
+};
 
 const User = mongoose.model('User', userSchema);
 
