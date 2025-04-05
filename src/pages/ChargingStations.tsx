@@ -195,7 +195,7 @@ const ChargingStations = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectItem value="">Tümü</SelectItem>
+                          <SelectItem value="all">Tümü</SelectItem>
                           <SelectItem value="AC">AC</SelectItem>
                           <SelectItem value="DC">DC</SelectItem>
                           <SelectItem value="Type 2">Type 2</SelectItem>

@@ -128,7 +128,7 @@ const CarFilters: React.FC<CarFiltersProps> = ({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="">Tümü</SelectItem>
+                        <SelectItem value="all">Tümü</SelectItem>
                         {brands.map((brand) => (
                           <SelectItem key={brand} value={brand}>
                             {brand}
@@ -150,7 +150,7 @@ const CarFilters: React.FC<CarFiltersProps> = ({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="">Tümü</SelectItem>
+                        <SelectItem value="all">Tümü</SelectItem>
                         {models.map((model) => (
                           <SelectItem key={model} value={model}>
                             {model}
@@ -261,7 +261,7 @@ const CarFilters: React.FC<CarFiltersProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="">Tümü</SelectItem>
+                    <SelectItem value="all">Tümü</SelectItem>
                     {locations.map((location) => (
                       <SelectItem key={location} value={location}>
                         {location}
@@ -286,7 +286,7 @@ const CarFilters: React.FC<CarFiltersProps> = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="">Tümü</SelectItem>
+                    <SelectItem value="all">Tümü</SelectItem>
                     {chargeTypes.map((type) => (
                       <SelectItem key={type} value={type}>
                         {type}
