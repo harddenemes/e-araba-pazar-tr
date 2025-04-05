@@ -26,6 +26,59 @@ interface PasswordUpdateData {
   newPassword: string;
 }
 
+// Mock data for development
+const mockUser = {
+  id: '1',
+  name: 'John Doe',
+  email: 'john.doe@example.com',
+  phone: '555-123-4567',
+  location: 'Istanbul',
+  avatarUrl: 'https://i.pravatar.cc/150?u=johndoe',
+  joinDate: '2023-01-15',
+};
+
+const mockListings = [
+  {
+    id: '1',
+    title: 'Tesla Model 3',
+    status: 'active',
+    views: 245,
+    likes: 15,
+    createdAt: '2023-05-10',
+  },
+  {
+    id: '2',
+    title: 'BMW i4',
+    status: 'pending',
+    views: 122,
+    likes: 8,
+    createdAt: '2023-06-05',
+  },
+  {
+    id: '3',
+    title: 'Audi e-tron',
+    status: 'sold',
+    views: 350,
+    likes: 25,
+    createdAt: '2023-04-20',
+  },
+];
+
+const mockFavorites = [
+  {
+    id: '101',
+    title: 'Mercedes EQC',
+    price: 850000,
+    imageUrl: 'https://via.placeholder.com/300x200?text=Mercedes+EQC',
+  },
+  {
+    id: '102',
+    title: 'Volkswagen ID.4',
+    price: 650000,
+    imageUrl: 'https://via.placeholder.com/300x200?text=VW+ID.4',
+  },
+];
+
 // Authentication Services
 export const loginUser = async (credentials: LoginCredentials) => {
   try {
@@ -37,7 +90,7 @@ export const loginUser = async (credentials: LoginCredentials) => {
     }
     
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     throw error.response?.data || { message: 'Login failed' };
   }
 };
@@ -52,7 +105,7 @@ export const registerUser = async (userData: RegisterData) => {
     }
     
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     throw error.response?.data || { message: 'Registration failed' };
   }
 };
@@ -62,70 +115,37 @@ export const logoutUser = () => {
   localStorage.removeItem('user');
 };
 
-// User Profile Services
-export const getCurrentUser = async () => {
-  try {
-    const storedUser = localStorage.getItem('user');
-    
-    if (storedUser) {
-      return JSON.parse(storedUser);
-    }
-    
-    const response = await api.get('/users/me');
-    localStorage.setItem('user', JSON.stringify(response.data.user));
-    return response.data.user;
-  } catch (error) {
-    throw error.response?.data || { message: 'Failed to get user data' };
-  }
+// User Profile Services - using mock data for now
+export const getCurrentUser = () => {
+  // Return mock data for development
+  return mockUser;
 };
 
-export const updateUserProfile = async (userData: UserUpdateData) => {
-  try {
-    const response = await api.patch('/users/updateMe', userData);
-    
-    // Update stored user data
-    if (response.data.success) {
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-    }
-    
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: 'Update failed' };
-  }
+export const updateUserProfile = (userId: string, userData: UserUpdateData) => {
+  // For development, just return a success response with the updated user data
+  return {
+    success: true,
+    user: { ...mockUser, ...userData }
+  };
 };
 
-export const updatePassword = async (passwordData: PasswordUpdateData) => {
-  try {
-    const response = await api.patch('/users/updatePassword', passwordData);
-    
-    // Update token if returned
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-    }
-    
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: 'Password update failed' };
-  }
+export const updatePassword = (userId: string, currentPassword: string, newPassword: string) => {
+  // For development, just return a success response
+  return {
+    success: true,
+    message: 'Password updated successfully'
+  };
 };
 
-// User Listings & Favorites
-export const getUserListings = async () => {
-  try {
-    const response = await api.get('/users/myListings');
-    return response.data.data;
-  } catch (error) {
-    throw error.response?.data || { message: 'Failed to fetch listings' };
-  }
+// User Listings & Favorites - using mock data for now
+export const getUserListings = () => {
+  // Return mock data for development
+  return mockListings;
 };
 
-export const getUserFavorites = async () => {
-  try {
-    const response = await api.get('/users/myFavorites');
-    return response.data.data;
-  } catch (error) {
-    throw error.response?.data || { message: 'Failed to fetch favorites' };
-  }
+export const getUserFavorites = () => {
+  // Return mock data for development
+  return mockFavorites;
 };
 
 // Password Reset
@@ -133,7 +153,7 @@ export const forgotPassword = async (email: string) => {
   try {
     const response = await api.post('/users/forgotPassword', { email });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     throw error.response?.data || { message: 'Request failed' };
   }
 };
@@ -142,7 +162,7 @@ export const resetPassword = async (token: string, password: string) => {
   try {
     const response = await api.patch(`/users/resetPassword/${token}`, { password });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     throw error.response?.data || { message: 'Reset failed' };
   }
 };
@@ -152,7 +172,7 @@ export const toggleTwoFactor = async () => {
   try {
     const response = await api.patch('/users/toggleTwoFactor');
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     throw error.response?.data || { message: 'Request failed' };
   }
 };

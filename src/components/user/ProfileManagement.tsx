@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Car, Heart, Settings, Lock, ShieldAlert } from 'lucide-react';
@@ -86,12 +85,12 @@ const ProfileManagement = ({ user: propUser, listings: propListings, favorites: 
     }
     
     if (!propListings) {
-      const userListings = getUserListings(propUser?.id || '1');
+      const userListings = getUserListings();
       setListings(userListings);
     }
     
     if (!propFavorites) {
-      const userFavorites = getUserFavorites(propUser?.id || '1');
+      const userFavorites = getUserFavorites();
       setFavorites(userFavorites);
     }
   }, [propUser, propListings, propFavorites]);
