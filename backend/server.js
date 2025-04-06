@@ -8,6 +8,7 @@ const carRoutes = require('./routes/carRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
 const stationRoutes = require('./routes/stationRoutes');
+const listingRoutes = require('./routes/listingRoutes');
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use('/api/cars', carRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/stations', stationRoutes);
+app.use('/api/listings', listingRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
