@@ -1,18 +1,13 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Battery, Car, Map, Search, User, MenuIcon, X, Zap } from 'lucide-react';
-
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
-  return (
-    <header className="header">
+  return <header className="header">
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
@@ -27,7 +22,7 @@ const Navbar = () => {
 
           {/* Authentication buttons for desktop */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" className="text-white border-white hover:bg-white hover:text-dark-gray">
+            <Button variant="outline" className="border-white hover:bg-white hover:text-dark-gray text-zinc-950">
               Giriş Yap
             </Button>
             <Button className="bg-white text-dark-gray hover:bg-light-gray">
@@ -42,8 +37,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 py-4 animate-fade-in">
+        {isMenuOpen && <div className="md:hidden mt-4 py-4 animate-fade-in">
             <nav className="flex flex-col space-y-4">
               <NavLinks mobile />
             </nav>
@@ -55,38 +49,41 @@ const Navbar = () => {
                 Kayıt Ol
               </Button>
             </div>
-          </div>
-        )}
+          </div>}
       </div>
-    </header>
-  );
+    </header>;
 };
-
-const NavLinks = ({ mobile = false }: { mobile?: boolean }) => {
-  const links = [
-    { href: "/", icon: <Car size={20} />, label: "Araçlar" },
-    { href: "/charging-stations", icon: <Battery size={20} />, label: "Şarj İstasyonları" },
-    { href: "/compare", icon: <Search size={20} />, label: "Karşılaştır" },
-    { href: "/blog", icon: <Map size={20} />, label: "Blog" },
-    { href: "/account", icon: <User size={20} />, label: "Hesabım" },
-  ];
-
-  return (
-    <>
-      {links.map((link) => (
-        <Link
-          key={link.href}
-          to={link.href}
-          className={`flex items-center space-x-2 text-white hover:text-light-gray transition-colors ${
-            mobile ? 'py-2' : ''
-          }`}
-        >
+const NavLinks = ({
+  mobile = false
+}: {
+  mobile?: boolean;
+}) => {
+  const links = [{
+    href: "/",
+    icon: <Car size={20} />,
+    label: "Araçlar"
+  }, {
+    href: "/charging-stations",
+    icon: <Battery size={20} />,
+    label: "Şarj İstasyonları"
+  }, {
+    href: "/compare",
+    icon: <Search size={20} />,
+    label: "Karşılaştır"
+  }, {
+    href: "/blog",
+    icon: <Map size={20} />,
+    label: "Blog"
+  }, {
+    href: "/account",
+    icon: <User size={20} />,
+    label: "Hesabım"
+  }];
+  return <>
+      {links.map(link => <Link key={link.href} to={link.href} className={`flex items-center space-x-2 text-white hover:text-light-gray transition-colors ${mobile ? 'py-2' : ''}`}>
           {link.icon}
           <span>{link.label}</span>
-        </Link>
-      ))}
-    </>
-  );
+        </Link>)}
+    </>;
 };
-
 export default Navbar;
